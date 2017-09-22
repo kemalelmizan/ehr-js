@@ -1,5 +1,5 @@
 ---
 applications:
- - name: GetStartedNode
-   random-route: true
+ - name: ehr-js
+   random-route: false
    memory: 256M
