@@ -1,10 +1,27 @@
 var express = require("express");
-var app = express();
+var Session = require("express-session");
 var cfenv = require("cfenv");
 var bodyParser = require("body-parser");
 var QRCode = require("qrcode");
+var google = require("googleapis");
+var OAuth2 = google.auth.OAuth2;
+var plus = google.plus("v1");
+var config = require("./config");
 
-var rootURL = "https://ehr-js.au-syd.mybluemix.net";
+var app = express();
+app.use(
+  Session({
+    secret: config.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true
+  })
+);
+
+var oauth2Client = new OAuth2(
+  config.CLIENT_ID,
+  config.CLIENT_SECRET,
+  config.REDIRECT_URL
+);
 
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database("./databases/main_example.db", err => {
@@ -104,15 +121,65 @@ var mydb;
 * }
 */
 
-QRCode.toString(rootURL, (err, string) => {
+QRCode.toString(config.ROOT_URL, (err, string) => {
   if (err) throw err;
   console.log(string);
 });
 
 app.get("/qr/this", function(request, response) {
-  QRCode.toDataURL(rootURL, (err, dataURL) => {
+  QRCode.toDataURL(config.ROOT_URL, (err, dataURL) => {
     if (err) throw err;
     response.send(dataURL);
+  });
+});
+
+app.get("/oauth2", function(request, response) {
+  var url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: "https://www.googleapis.com/auth/plus.me"
+  });
+  response.send(`
+    &lt;h1&gt;Authentication using google oAuth&lt;/h1&gt;
+    &lt;a href=${url}&gt;Login&lt;/a&gt;
+  `);
+});
+
+app.get("/oauth2callback", function(request, response) {
+  var session = req.session;
+  var code = req.query.code; // the query param code
+  oauth2Client.getToken(code, function(err, tokens) {
+    // Now tokens contains an access_token and an optional refresh_token. Save them.
+    if (!err) {
+      oauth2Client.setCredentials(tokens);
+      //saving the token to current session
+      session["tokens"] = tokens;
+      res.send(`
+          &lt;h3&gt;Login successful!!&lt;/h3&gt;
+          &lt;a href="/details"&gt;Go to details page&lt;/a&gt;
+      `);
+    } else {
+      res.send(`
+          &lt;h3&gt;Login failed!!&lt;/h3&gt;
+      `);
+    }
+  });
+});
+
+app.use("/details", function(req, res) {
+  oauth2Client.setCredentials(req.session["tokens"]);
+
+  var p = new Promise(function(resolve, reject) {
+    plus.people.get({ userId: "me", auth: oauth2Client }, function(
+      err,
+      response
+    ) {
+      resolve(response || err);
+    });
+  }).then(function(data) {
+    res.send(`
+          &lt;img src=${data.image.url} /&gt;
+          &lt;h3&gt;Hello ${data.displayName}&lt;/h3&gt;
+      `);
   });
 });
 

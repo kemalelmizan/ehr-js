@@ -1,4 +1,6 @@
 vcap-local.json
+config.js
+npm-debug.log
 node_modules
 databases
 certs
