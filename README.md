@@ -1,3 +1,14 @@
+# EHR - Cloud Based Concept with Node.js and Bluemix
+
+Libraries used:
+- [node-sqlite](https://github.com/mapbox/node-sqlite3)
+- [node-qrcode](https://github.com/soldair/node-qrcode)
+- [URSA](https://github.com/JoshKaufman/ursa)
+- [jsrsasign](https://github.com/kjur/jsrsasign)
+
+Technologies Stack used:
+- Hosting: IBM Bluemix
+- Deployment: Cloud Foundry
 
 # Node.js getting started application
 The Bluemix Getting started tutorial for Node.js uses this sample application to provide you with a sample workflow for working with any Node.js app on Bluemix; you set up a development environment, deploy an app locally and on Bluemix, and integrate a Bluemix database service in your app.
