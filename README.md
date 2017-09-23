@@ -3,9 +3,10 @@
 Libraries used:
 - [express](https://github.com/expressjs/express)
 - [node-sqlite](https://github.com/mapbox/node-sqlite3) for accessing sqlite with node
+- [Google OAuth2 API](https://github.com/google/google-api-nodejs-client) for authenticating users
 - [URSA](https://github.com/JoshKaufman/ursa) for RSA public/private key OpenSSL bindings
 - [node-qrcode](https://github.com/soldair/node-qrcode) for generating QR-Codes
-- [Google OAuth2 API](https://github.com/google/google-api-nodejs-client) for authenticating users
+- [html5-qrcode](https://github.com/dwa012/html5-qrcode) for scanning QR-Codes
 
 Technologies Stack used for Development:
 - Node.js - Express - SQLite

@@ -3,10 +3,27 @@
 }
 
 a,
-img {
+img,
+button,
+.m-center {
   margin-right: auto;
   margin-left: auto;
   display: block;
+}
+
+#qr-reader {
+  width: 300px;
+  height: 300px;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  margin-right: auto;
+  margin-left: auto;
+  display: none;
+}
+
+#google-oauth2 img {
+  margin-top: 25px;
 }
 
 .container h1 {

@@ -117,11 +117,21 @@ QRCode.toString(config.ROOT_URL, (err, string) => {
   console.log(string);
 });
 
-app.get("/qr/this", function(request, response) {
+app.get("/qr/root", function(request, response) {
   QRCode.toDataURL(config.ROOT_URL, (err, dataURL) => {
     if (err) throw err;
     response.send(dataURL);
   });
+});
+
+app.get("/qr/:userId", function(request, response) {
+  QRCode.toDataURL(
+    config.ROOT_URL + "/" + request.params.userId,
+    (err, dataURL) => {
+      if (err) throw err;
+      response.send(dataURL);
+    }
+  );
 });
 
 app.get("/oauth2url", function(request, response) {
@@ -150,19 +160,21 @@ app.get("/oauth2callback", function(req, res) {
   });
 });
 
+app.get("/logout", function(req, res) {
+  req.session["tokens"] = undefined;
+  res.redirect(config.ROOT_URL);
+});
+
 app.use("/oauth2details", function(req, res) {
   if (req.session["tokens"] === undefined) {
     res.send("0");
   } else {
     oauth2Client.setCredentials(req.session["tokens"]);
-    var p = new Promise(function(resolve, reject) {
-      plus.people.get({ userId: "me", auth: oauth2Client }, function(
-        err,
-        response
-      ) {
+    var p = new Promise((resolve, reject) => {
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, response) => {
         resolve(response || err);
       });
-    }).then(function(data) {
+    }).then(data => {
       res.send(data);
     });
   }
