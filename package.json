@@ -1,7 +1,7 @@
 {
-  "name": "get-started-node",
+  "name": "ehr-js",
   "main": "server.js",
-  "description": "An introduction to developing Node.js apps on the Bluemix platform",
+  "description": "EHR - Cloud Based Concept with Node.js and Bluemix",
   "version": "0.1.1",
   "private": false,
   "engines": {
@@ -12,15 +12,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/IBM-Bluemix/get-started-node"
+    "url": "https://github.com/kemalelmizan/ehr-js"
   },
   "dependencies": {
     "body-parser": "^1.17.x",
     "cfenv": "^1.0.x",
     "cloudant": "^1.7.x",
     "dotenv": "^4.0.0",
-    "express": "^4.15.x"
+    "express": "^4.15.x",
+    "qrcode": "^0.9.0",
+    "sqlite3": "^3.1.12",
+    "ursa": "^0.9.4"
   },
-  "author": "IBM Corp",
+  "author": "Kemal Elmizan",
   "license": "Apache-2.0"
 }

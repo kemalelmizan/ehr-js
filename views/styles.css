@@ -1,3 +1,13 @@
 .helloInput {
   width: 200px;
 }
+
+#img-qr-this {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+}
+
+.container h1 {
+  text-align: center;
+}
