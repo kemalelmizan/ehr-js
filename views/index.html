@@ -8,7 +8,8 @@
     <title>Electronic Health Record (EHR-js)</title>
 
     <!-- Bootstrap -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
     <link href="styles.css" rel="stylesheet">
 </head>
 
@@ -35,6 +36,13 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-xs-12">
+                <table id="dt-info" class="display table-striped" cellspacing="0" width="100%">
+                </table>
+            </div>
+        </div>
+
         <div id="nameInput" class="input-group-lg center-block helloInput">
             <input id="user_name" type="text" class="form-control" placeholder="What's your name?" aria-describedby="sizing-addon1" value=""
             />
@@ -44,9 +52,10 @@
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
     <script src="js/html5-qrcode.js" type="text/javascript"></script>
     <script src="js/antixss.js" type="text/javascript"></script>
     <script src="js/script.js" type="text/javascript"></script>

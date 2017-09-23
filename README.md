@@ -1,15 +1,21 @@
 # EHR - Cloud Based Concept with Node.js and Bluemix
 
 Libraries used:
-- [express](https://github.com/expressjs/express)
+
+Back end:
+- [express](https://github.com/expressjs/express) for routing, app logic, etc
 - [node-sqlite](https://github.com/mapbox/node-sqlite3) for accessing sqlite with node
 - [Google OAuth2 API](https://github.com/google/google-api-nodejs-client) for authenticating users
 - [URSA](https://github.com/JoshKaufman/ursa) for RSA public/private key OpenSSL bindings
 - [node-qrcode](https://github.com/soldair/node-qrcode) for generating QR-Codes
+
+Front end:
 - [html5-qrcode](https://github.com/dwa012/html5-qrcode) for scanning QR-Codes
+- [DataTables](https://github.com/DataTables/DataTables) for displaying data
 
 Technologies Stack used for Development:
-- Node.js - Express - SQLite
+- Node.js (Express) 
+- SQLite
 - Hosting: IBM Bluemix
 - Deployment: Cloud Foundry
 

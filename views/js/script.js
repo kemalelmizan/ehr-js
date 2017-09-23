@@ -3,7 +3,6 @@ $(document).ready(function() {
   $.get("./oauth2details", function(data, textStatus, jqXHR) {
     if (data !== "0") {
       // Logged In
-      console.log(data);
       $("#google-id-profile").append(
         "<div>Welcome, " +
           data.displayName +
@@ -11,10 +10,52 @@ $(document).ready(function() {
       );
       $("#google-id-profile").append("<br/>");
       $("#google-id-profile").append("<img src='" + data.image.url + "'/>");
+
+      // Get QR Image
       $.get("./qr/" + data.id, function(data, textStatus, jqXHR) {
         $("#img-qr").attr("src", data);
       });
+
+      // Get Basic Info
+      $.get("./data/info/" + data.id, function(data, textStatus, jqXHR) {
+        $("#dt-info").DataTable({
+          aaSorting: [],
+          paging: false,
+          columns: [
+            {
+              data: "key",
+              title: "Key"
+            },
+            {
+              data: "value",
+              title: "Value"
+            }
+          ],
+          initComplete: function() {
+            this.api()
+              .rows.add(
+                JSON.stringify(data, function(key, value) {
+                  if (typeof value === "number") {
+                    return value.toString();
+                  }
+                  if (value === null) {
+                    return "";
+                  }
+                  return value;
+                })
+                  .slice(2, -2)
+                  .split('","')
+                  .map(c => ({
+                    key: c.split('":"')[0],
+                    value: c.split('":"')[1]
+                  }))
+              )
+              .draw();
+          }
+        });
+      });
     } else {
+      // Not Logged In
       $.get("./oauth2url", function(data, textStatus, jqXHR) {
         $("#google-oauth2").attr("href", data);
         $("#google-oauth2").show();

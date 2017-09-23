@@ -2,12 +2,14 @@ var express = require("express");
 var Session = require("express-session");
 var cfenv = require("cfenv");
 var bodyParser = require("body-parser");
+var util = require("util");
 var QRCode = require("qrcode");
 var google = require("googleapis");
 var config = require("./config");
 
 var OAuth2 = google.auth.OAuth2;
 var plus = google.plus("v1");
+var sqlite3 = require("sqlite3").verbose();
 
 var app = express();
 app.use(
@@ -23,14 +25,6 @@ var oauth2Client = new OAuth2(
   config.CLIENT_SECRET,
   config.REDIRECT_URL
 );
-
-var sqlite3 = require("sqlite3").verbose();
-var db = new sqlite3.Database("./databases/main_example.db", err => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log("Connected to the databases/main_example database.");
-});
 
 var fs = require("fs"),
   ursa = require("ursa"),
@@ -85,6 +79,7 @@ db.serialize(function() {
   });
 });
 */
+var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
 
 db.serialize(() => {
   db.each(
@@ -100,12 +95,7 @@ db.serialize(() => {
   );
 });
 
-db.close(err => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log("Closed the database connection.");
-});
+db.close(config.DB_CLOSE_ERR);
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -117,29 +107,56 @@ QRCode.toString(config.ROOT_URL, (err, string) => {
   console.log(string);
 });
 
-app.get("/qr/root", function(request, response) {
+app.get("/qr/root", function(req, res) {
   QRCode.toDataURL(config.ROOT_URL, (err, dataURL) => {
     if (err) throw err;
-    response.send(dataURL);
+    res.send(dataURL);
   });
 });
 
-app.get("/qr/:userId", function(request, response) {
+app.get("/qr/:userId", function(req, res) {
   QRCode.toDataURL(
-    config.ROOT_URL + "/" + request.params.userId,
+    config.ROOT_URL + "/" + req.params.userId,
     (err, dataURL) => {
       if (err) throw err;
-      response.send(dataURL);
+      res.send(dataURL);
     }
   );
 });
 
-app.get("/oauth2url", function(request, response) {
+app.get("/data/info/:userId", function(req, res) {
+  if (req.session["tokens"] === undefined) {
+    res.redirect(config.ROOT_URL);
+  } else {
+    oauth2Client.setCredentials(req.session["tokens"]);
+    var p = new Promise((resolve, reject) => {
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, res) => {
+        resolve(res || err);
+      });
+    }).then(data => {
+      // TODO: allow medic userId approved to access this
+      if (data.id !== req.params.userId) {
+        res.redirect(config.ROOT_URL);
+      } else {
+        var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
+        var sql = `SELECT * FROM PATIENT_ORG WHERE GOOGLE_ID = ?`;
+        db.each(sql, [req.params.userId], (err, row) => {
+          if (err) throw err;
+          res.send(row);
+          // res.send(util.inspect(row));
+        });
+        db.close(config.DB_CLOSE_ERR);
+      }
+    });
+  }
+});
+
+app.get("/oauth2url", function(req, res) {
   var url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: "https://www.googleapis.com/auth/plus.me"
   });
-  response.send(url);
+  res.send(url);
 });
 
 app.get("/oauth2callback", function(req, res) {
@@ -154,7 +171,7 @@ app.get("/oauth2callback", function(req, res) {
       res.redirect(config.ROOT_URL);
     } else {
       res.send(`
-        <h3>Login failed!!!</h3>
+        <h3>Login failed.</h3>
       `);
     }
   });
@@ -171,8 +188,8 @@ app.use("/oauth2details", function(req, res) {
   } else {
     oauth2Client.setCredentials(req.session["tokens"]);
     var p = new Promise((resolve, reject) => {
-      plus.people.get({ userId: "me", auth: oauth2Client }, (err, response) => {
-        resolve(response || err);
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, res) => {
+        resolve(res || err);
       });
     }).then(data => {
       res.send(data);
@@ -184,16 +201,16 @@ app.use("/oauth2details", function(req, res) {
 var mydb;
 
 /* Endpoint to greet and add a new visitor to database.
-* Send a POST request to localhost:3000/api/visitors with body
+* Send a POST req to localhost:3000/api/visitors with body
 * {
 * 	"name": "Bob"
 * }
 */
-app.post("/api/visitors", function(request, response) {
-  var userName = request.body.name;
+app.post("/api/visitors", function(req, res) {
+  var userName = req.body.name;
   if (!mydb) {
     console.log("No database.");
-    response.send("Hello " + userName + "!");
+    res.send("Hello " + userName + "!");
     return;
   }
   // insert the username as a document
@@ -201,7 +218,7 @@ app.post("/api/visitors", function(request, response) {
     if (err) {
       return console.log("[mydb.insert] ", err.message);
     }
-    response.send("Hello " + userName + "! I added you to the database.");
+    res.send("Hello " + userName + "! I added you to the database.");
   });
 });
 
@@ -212,14 +229,14 @@ app.post("/api/visitors", function(request, response) {
  * GET http://localhost:3000/api/visitors
  * </code>
  *
- * Response:
+ * response:
  * [ "Bob", "Jane" ]
  * @return An array of all the visitor names
  */
-app.get("/api/visitors", function(request, response) {
+app.get("/api/visitors", function(req, res) {
   var names = [];
   if (!mydb) {
-    response.json(names);
+    res.json(names);
     return;
   }
 
@@ -228,7 +245,7 @@ app.get("/api/visitors", function(request, response) {
       body.rows.forEach(function(row) {
         if (row.doc.name) names.push(row.doc.name);
       });
-      response.json(names);
+      res.json(names);
     }
   });
 });
