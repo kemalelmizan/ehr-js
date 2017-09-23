@@ -2,7 +2,8 @@
   width: 200px;
 }
 
-#img-qr-this {
+a,
+img {
   margin-right: auto;
   margin-left: auto;
   display: block;

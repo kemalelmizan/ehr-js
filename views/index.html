@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello World</title>
+    <title>Electronic Health Record (EHR-js)</title>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -16,6 +16,12 @@
     <div class="container">
         <h1>Welcome to EHR-js</h1>
         <img id="img-qr-this" src="">
+        <a id="google-oauth2" href="#" hidden>
+            <img src="https://developers.google.com/accounts/images/sign-in-with-google.png" alt="Sign in with Google" style="width: 200px;">
+        </a>
+        <div id="google-id-profile" class="text-center">
+
+        </div>
         <br/>
         <div id="nameInput" class="input-group-lg center-block helloInput">
             <input id="user_name" type="text" class="form-control" placeholder="What's your name?" aria-describedby="sizing-addon1" value=""
@@ -32,8 +38,21 @@
 
     <script>
         $(document).ready(function () {
+            $("#nameInput").hide();
+            $.get('./oauth2details', function (data, textStatus, jqXHR) {
+                if (data !== "0") { // Logged In
+                    $('#google-id-profile').append("<div>Welcome, " + data.displayName + "!</div>")
+                    $('#google-id-profile').append("<br/>")
+                    $('#google-id-profile').append("<img src='" + data.image.url + "'/>")
+                } else {
+                    $.get('./oauth2url', function (data, textStatus, jqXHR) {
+                        $('#google-oauth2').attr('href', data);
+                        $('#google-oauth2').show();
+                    })
+                }
+            })
+
             $.get('./qr/this', function (data, textStatus, jqXHR) {
-                console.log(data);
                 $('#img-qr-this').attr('src', data);
             })
         });

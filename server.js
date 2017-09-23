@@ -4,9 +4,10 @@ var cfenv = require("cfenv");
 var bodyParser = require("body-parser");
 var QRCode = require("qrcode");
 var google = require("googleapis");
+var config = require("./config");
+
 var OAuth2 = google.auth.OAuth2;
 var plus = google.plus("v1");
-var config = require("./config");
 
 var app = express();
 app.use(
@@ -111,16 +112,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-// Bluemix's NoSQL Database
-var mydb;
-
-/* Endpoint to greet and add a new visitor to database.
-* Send a POST request to localhost:3000/api/visitors with body
-* {
-* 	"name": "Bob"
-* }
-*/
-
 QRCode.toString(config.ROOT_URL, (err, string) => {
   if (err) throw err;
   console.log(string);
@@ -133,18 +124,15 @@ app.get("/qr/this", function(request, response) {
   });
 });
 
-app.get("/oauth2", function(request, response) {
+app.get("/oauth2url", function(request, response) {
   var url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: "https://www.googleapis.com/auth/plus.me"
   });
-  response.send(`
-    &lt;h1&gt;Authentication using google oAuth&lt;/h1&gt;
-    &lt;a href=${url}&gt;Login&lt;/a&gt;
-  `);
+  response.send(url);
 });
 
-app.get("/oauth2callback", function(request, response) {
+app.get("/oauth2callback", function(req, res) {
   var session = req.session;
   var code = req.query.code; // the query param code
   oauth2Client.getToken(code, function(err, tokens) {
@@ -153,36 +141,42 @@ app.get("/oauth2callback", function(request, response) {
       oauth2Client.setCredentials(tokens);
       //saving the token to current session
       session["tokens"] = tokens;
-      res.send(`
-          &lt;h3&gt;Login successful!!&lt;/h3&gt;
-          &lt;a href="/details"&gt;Go to details page&lt;/a&gt;
-      `);
+      res.redirect(config.ROOT_URL);
     } else {
       res.send(`
-          &lt;h3&gt;Login failed!!&lt;/h3&gt;
+        <h3>Login failed!!!</h3>
       `);
     }
   });
 });
 
-app.use("/details", function(req, res) {
-  oauth2Client.setCredentials(req.session["tokens"]);
-
-  var p = new Promise(function(resolve, reject) {
-    plus.people.get({ userId: "me", auth: oauth2Client }, function(
-      err,
-      response
-    ) {
-      resolve(response || err);
+app.use("/oauth2details", function(req, res) {
+  if (req.session["tokens"] === undefined) {
+    res.send("0");
+  } else {
+    oauth2Client.setCredentials(req.session["tokens"]);
+    var p = new Promise(function(resolve, reject) {
+      plus.people.get({ userId: "me", auth: oauth2Client }, function(
+        err,
+        response
+      ) {
+        resolve(response || err);
+      });
+    }).then(function(data) {
+      res.send(data);
     });
-  }).then(function(data) {
-    res.send(`
-          &lt;img src=${data.image.url} /&gt;
-          &lt;h3&gt;Hello ${data.displayName}&lt;/h3&gt;
-      `);
-  });
+  }
 });
 
+// Bluemix's NoSQL Database
+var mydb;
+
+/* Endpoint to greet and add a new visitor to database.
+* Send a POST request to localhost:3000/api/visitors with body
+* {
+* 	"name": "Bob"
+* }
+*/
 app.post("/api/visitors", function(request, response) {
   var userName = request.body.name;
   if (!mydb) {
@@ -241,13 +235,10 @@ const appEnv = cfenv.getAppEnv(appEnvOpts);
 if (appEnv.services["cloudantNoSQLDB"]) {
   // Load the Cloudant library.
   var Cloudant = require("cloudant");
-
   // Initialize database with credentials
   var cloudant = Cloudant(appEnv.services["cloudantNoSQLDB"][0].credentials);
-
   //database name
   var dbName = "mydb";
-
   // Create a new "mydb" database.
   cloudant.db.create(dbName, function(err, data) {
     if (
@@ -255,7 +246,6 @@ if (appEnv.services["cloudantNoSQLDB"]) {
     )
       console.log("Created database: " + dbName);
   });
-
   // Specify the database we are going to use (mydb)...
   mydb = cloudant.db.use(dbName);
 }
