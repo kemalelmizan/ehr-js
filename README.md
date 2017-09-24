@@ -1,4 +1,4 @@
-# [EHR-js](https://ehr-js.au-syd.mybluemix.net) [![Build Status](https://travis-ci.org/kemalelmizan/ehr-js.svg?branch=master)](https://travis-ci.org/kemalelmizan/ehr-js)
+# [EHR-js](https://ehr-js.au-syd.mybluemix.net) [![Build Status](https://travis-ci.org/kemalelmizan/ehr-js.svg?branch=master)](https://travis-ci.org/kemalelmizan/ehr-js) [![Coverage Status](https://coveralls.io/repos/github/kemalelmizan/ehr-js/badge.svg?branch=master)](https://coveralls.io/github/kemalelmizan/ehr-js?branch=master)
 ### Cloud Based Electronic Health Record Concept with Node.js
 
 Libraries used in back end:
