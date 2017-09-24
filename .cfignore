@@ -4,5 +4,8 @@ README.md
 .github/
 .git/
 .gitignore
+.snyk
+.travis.yml
+.flowconfig
 logs
 *.log

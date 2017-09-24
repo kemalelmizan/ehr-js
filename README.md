@@ -19,6 +19,7 @@ Technologies stack used for development:
 - [IBM Bluemix](https://www.ibm.com/cloud-computing/bluemix/) for Hosting
 - [Cloud Foundry](https://www.cloudfoundry.org) for Deployment
 - [Snyk](https://snyk.io) for vulnerability assessment
+- [TravisCI](https://travis-ci.org) for continuous integration
 
 Below is Bluemix's Readme for Node.js
 # Node.js getting started application
