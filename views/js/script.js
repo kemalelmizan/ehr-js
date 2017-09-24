@@ -14,6 +14,7 @@ function getBasicInfo(id) {
           "<a id='a-create-record' href='#'> No EHR detected for you in our system. Create one here!</a>"
         );
         $("#dt-alert-info").slideDown();
+        $("#dt-controls").hide();
       } else {
         console.log(data);
         LOGGED_IN_PATIENT_ID = data.ROW_ID;
@@ -105,9 +106,11 @@ $(document).ready(function() {
   });
 });
 
-$("body").on("click", "#a-create-record", function(event) {
+$("body").on("click", "#a-create-record,#dt-update-info", function(event) {
   event.preventDefault();
   $("#dt-alert-info").slideUp();
+  $("#dt-info").slideUp();
+  $("form").slideUp();
   $("#form-insert-patient-org").slideDown();
   $("html, body").animate(
     { scrollTop: $("#form-insert-patient-org").offset().top - 90 },
@@ -116,12 +119,19 @@ $("body").on("click", "#a-create-record", function(event) {
   $("#form-insert-patient-org")
     .find("input")[0]
     .focus();
+  if ($.fn.DataTable.isDataTable("#dt-info")) {
+    $("#dt-info")
+      .DataTable()
+      .destroy();
+    $("#dt-info").empty();
+  }
 });
 
 $("body").on("click", "#dt-update-address", function(event) {
   event.preventDefault();
   $("#dt-alert-info").slideUp();
   $("#dt-info").slideUp();
+  $("form").slideUp();
   $("#form-insert-addr-info").slideDown();
   $("html, body").animate(
     { scrollTop: $("#form-insert-addr-info").offset().top - 90 },
@@ -130,12 +140,19 @@ $("body").on("click", "#dt-update-address", function(event) {
   $("#form-insert-addr-info")
     .find("input")[0]
     .focus();
+  if ($.fn.DataTable.isDataTable("#dt-info")) {
+    $("#dt-info")
+      .DataTable()
+      .destroy();
+    $("#dt-info").empty();
+  }
 });
 
 $("body").on("click", "#dt-insert-health", function(event) {
   event.preventDefault();
   $("#dt-alert-info").slideUp();
   $("#dt-info").slideUp();
+  $("form").slideUp();
   $("#form-insert-health-info").slideDown();
   $("html, body").animate(
     { scrollTop: $("#form-insert-health-info").offset().top - 90 },
@@ -144,12 +161,19 @@ $("body").on("click", "#dt-insert-health", function(event) {
   $("#form-insert-health-info")
     .find("input")[0]
     .focus();
+  if ($.fn.DataTable.isDataTable("#dt-info")) {
+    $("#dt-info")
+      .DataTable()
+      .destroy();
+    $("#dt-info").empty();
+  }
 });
 
 $("body").on("click", "#dt-insert-history", function(event) {
   event.preventDefault();
   $("#dt-alert-info").slideUp();
   $("#dt-info").slideUp();
+  $("form").slideUp();
   $("#form-insert-history").slideDown();
   $("html, body").animate(
     { scrollTop: $("#form-insert-history").offset().top - 90 },
@@ -158,12 +182,19 @@ $("body").on("click", "#dt-insert-history", function(event) {
   $("#form-insert-history")
     .find("input")[0]
     .focus();
+  if ($.fn.DataTable.isDataTable("#dt-info")) {
+    $("#dt-info")
+      .DataTable()
+      .destroy();
+    $("#dt-info").empty();
+  }
 });
 
 $("body").on("click", "#dt-insert-medication", function(event) {
   event.preventDefault();
   $("#dt-alert-info").slideUp();
   $("#dt-info").slideUp();
+  $("form").slideUp();
   $("#form-insert-medication").slideDown();
   $("html, body").animate(
     { scrollTop: $("#form-insert-medication").offset().top - 90 },
@@ -172,6 +203,25 @@ $("body").on("click", "#dt-insert-medication", function(event) {
   $("#form-insert-medication")
     .find("input")[0]
     .focus();
+  if ($.fn.DataTable.isDataTable("#dt-info")) {
+    $("#dt-info")
+      .DataTable()
+      .destroy();
+    $("#dt-info").empty();
+  }
+});
+
+$("body").on("click", "#dt-view-records", function(event) {
+  event.preventDefault();
+  $("#dt-alert-info").slideUp();
+  $("form").slideUp();
+  if ($.fn.DataTable.isDataTable("#dt-info")) {
+    $("#dt-info")
+      .DataTable()
+      .destroy();
+    $("#dt-info").empty();
+  }
+  getBasicInfo();
 });
 
 $("body").on("submit", "#form-insert-patient-org", function(event) {
@@ -194,6 +244,8 @@ $("body").on("submit", "#form-insert-patient-org", function(event) {
         600
       );
       $("#form-insert-patient-org").slideUp();
+      $("#dt-controls").show();
+
       getBasicInfo();
     });
   }
