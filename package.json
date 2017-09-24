@@ -8,7 +8,9 @@
     "node": "6.*"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -24,8 +26,10 @@
     "googleapis": "^22.1.0",
     "qrcode": "^0.9.0",
     "sqlite3": "^3.1.12",
-    "ursa": "^0.9.4"
+    "ursa": "^0.9.4",
+    "snyk": "^1.41.1"
   },
   "author": "Kemal Elmizan",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "snyk": true
 }
