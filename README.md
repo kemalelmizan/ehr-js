@@ -1,4 +1,5 @@
-# EHR - Cloud Based Concept with Node.js and Bluemix
+# [EHR-js](https://ehr-js.au-syd.mybluemix.net) 
+## Cloud Based Concept with Node.js and Bluemix
 [![Build Status](https://travis-ci.org/kemalelmizan/ehr-js.svg?branch=master)](https://travis-ci.org/kemalelmizan/ehr-js)
 
 
