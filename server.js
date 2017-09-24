@@ -126,7 +126,8 @@ app.get("/qr/:userId", function(req, res) {
 
 app.get("/data/info/:userId", function(req, res) {
   if (req.session["tokens"] === undefined) {
-    res.redirect(config.ROOT_URL);
+    // res.redirect(config.ROOT_URL);
+    res.send({ redirect: config.ROOT_URL });
   } else {
     oauth2Client.setCredentials(req.session["tokens"]);
     var p = new Promise((resolve, reject) => {

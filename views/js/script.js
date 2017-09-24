@@ -3,6 +3,7 @@ $(document).ready(function() {
   $.get("./oauth2details", function(data, textStatus, jqXHR) {
     if (data !== "0") {
       // Logged In
+      $("#h1-welcome").hide();
       $("#google-id-profile").append(
         "<div>Welcome, " +
           data.displayName +
@@ -18,41 +19,45 @@ $(document).ready(function() {
 
       // Get Basic Info
       $.get("./data/info/" + data.id, function(data, textStatus, jqXHR) {
-        $("#dt-info").DataTable({
-          aaSorting: [],
-          paging: false,
-          columns: [
-            {
-              data: "key",
-              title: "Key"
-            },
-            {
-              data: "value",
-              title: "Value"
+        if (data.redirect) {
+          window.location.replace(data.redirect);
+        } else {
+          $("#dt-info").DataTable({
+            aaSorting: [],
+            paging: false,
+            columns: [
+              {
+                data: "key",
+                title: "Key"
+              },
+              {
+                data: "value",
+                title: "Value"
+              }
+            ],
+            initComplete: function() {
+              this.api()
+                .rows.add(
+                  JSON.stringify(data, function(key, value) {
+                    if (typeof value === "number") {
+                      return value.toString();
+                    }
+                    if (value === null) {
+                      return "";
+                    }
+                    return value;
+                  })
+                    .slice(2, -2)
+                    .split('","')
+                    .map(c => ({
+                      key: c.split('":"')[0],
+                      value: c.split('":"')[1]
+                    }))
+                )
+                .draw();
             }
-          ],
-          initComplete: function() {
-            this.api()
-              .rows.add(
-                JSON.stringify(data, function(key, value) {
-                  if (typeof value === "number") {
-                    return value.toString();
-                  }
-                  if (value === null) {
-                    return "";
-                  }
-                  return value;
-                })
-                  .slice(2, -2)
-                  .split('","')
-                  .map(c => ({
-                    key: c.split('":"')[0],
-                    value: c.split('":"')[1]
-                  }))
-              )
-              .draw();
-          }
-        });
+          });
+        }
       });
     } else {
       // Not Logged In
