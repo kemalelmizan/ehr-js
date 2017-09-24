@@ -14,10 +14,11 @@ Front end:
 - [DataTables](https://github.com/DataTables/DataTables) for displaying data
 
 Technologies Stack used for Development:
-- Node.js (Express) 
-- SQLite
-- Hosting: IBM Bluemix
-- Deployment: Cloud Foundry
+- [Node.js](https://nodejs.org) with [Express](https://github.com/expressjs/express) for backend app logic 
+- [SQLite](https://www.sqlite.org) for relational database
+- [IBM Bluemix](https://www.ibm.com/cloud-computing/bluemix/) for Hosting
+- [Cloud Foundry](https://www.cloudfoundry.org) for Deployment
+- [Snyk](https://snyk.io) for vulnerability assessment
 
 Below is Bluemix's Readme for Node.js
 
