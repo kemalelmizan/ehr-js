@@ -69,11 +69,6 @@ $(document).ready(function() {
   });
 });
 
-// $("body").on("click", "#a-logout", function(e) {
-//   console.log("logout");
-//   e.preventDefault();
-// });
-
 var scanning = false;
 $("#qr-scan").click(function(event) {
   if (!scanning) {
@@ -96,7 +91,7 @@ $("#qr-scan").click(function(event) {
       },
       function(error) {
         //show read errors
-        console.warn(error);
+        // console.warn(error);
       },
       function(videoError) {
         //the video stream could be opened
