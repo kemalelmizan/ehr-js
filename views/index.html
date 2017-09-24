@@ -15,7 +15,7 @@
 
 <body>
     <div class="container">
-        <h1 id="h1-welcome">Welcome to EHR-js</h1>
+        <h1 id="h1-welcome">EHR-js <a href="https://github.com/kemalelmizan/ehr-js"><img src="images/view-on-github.png" alt="View on Github"></a></h1>
         <img id="img-qr" src="">
         <a id="google-oauth2" href="#" hidden>
             <img src="https://developers.google.com/accounts/images/sign-in-with-google.png" alt="Sign in with Google" style="width: 200px;">
@@ -83,17 +83,104 @@
                         <label for="JOB">Job</label>
                         <input type="text" class="form-control" id="JOB">
                     </div>
-                    <button type="submit" class="btn btn-block btn-success">Next</button>
+                    <button type="submit" class="btn btn-block btn-success">Submit</button>
+                </form>
+                <form id="form-insert-addr-info" method="post" hidden>
+                    <div class="form-group">
+                        <label for="ADDR_NAME">Address</label>
+                        <input required type="text" class="form-control" id="ADDR_NAME">
+                    </div>
+                    <div class="form-group">
+                        <label for="HOUSE_NUM">House Number</label>
+                        <input required type="text" class="form-control" id="HOUSE_NUM">
+                    </div>
+                    <div class="form-group">
+                        <label for="PROVINCE">Province</label>
+                        <input type="text" class="form-control" id="PROVINCE">
+                    </div>
+                    <div class="form-group">
+                        <label for="VILLAGE">Village</label>
+                        <input type="text" class="form-control" id="VILLAGE">
+                    </div>
+                    <div class="form-group">
+                        <label for="SUBDISTRICT">Subdistrict</label>
+                        <input type="text" class="form-control" id="SUBDISTRICT">
+                    </div>
+                    <div class="form-group">
+                        <label for="POSTAL_CODE">Postal Code</label>
+                        <input type="text" class="form-control" id="POSTAL_CODE">
+                    </div>
+                    <button type="submit" class="btn btn-block btn-success">Submit</button>
+                </form>
+                <form id="form-insert-health-info" method="post" hidden>
+                    <div class="form-group">
+                        <label for="HEIGHT">Height</label>
+                        <input required type="text" class="form-control" id="HEIGHT">
+                    </div>
+                    <div class="form-group">
+                        <label for="WEIGHT">Weight</label>
+                        <input required type="text" class="form-control" id="WEIGHT">
+                    </div>
+                    <div class="form-group">
+                        <label for="TEMPERATURE">Temperature</label>
+                        <input type="text" class="form-control" id="TEMPERATURE">
+                    </div>
+                    <div class="form-group">
+                        <label for="BLOODPRESSURE">Blood Pressure</label>
+                        <input type="text" class="form-control" id="BLOODPRESSURE">
+                    </div>
+                    <div class="form-group">
+                        <label for="CHOLESTEROL">Cholesterol</label>
+                        <input type="text" class="form-control" id="CHOLESTEROL">
+                    </div>
+                    <button type="submit" class="btn btn-block btn-success">Submit</button>
+                </form>
+                <form id="form-insert-history" method="post" hidden>
+                    <div class="form-group">
+                        <label for="PROBLEMS">Problems</label>
+                        <input required type="text" class="form-control" id="PROBLEMS">
+                    </div>
+                    <div class="form-group">
+                        <label for="ALLERGIES_ADVERSE_REACT">Allergies / Adverse Reaction</label>
+                        <input required type="text" class="form-control" id="ALLERGIES_ADVERSE_REACT">
+                    </div>
+                    <div class="form-group">
+                        <label for="OPERATION">Operation</label>
+                        <input type="text" class="form-control" id="OPERATION">
+                    </div>
+                    <div class="form-group">
+                        <label for="DATE_OPERATION">Date of Operation</label>
+                        <input type="text" class="form-control" id="DATE_OPERATION">
+                    </div>
+                    <button type="submit" class="btn btn-block btn-success">Submit</button>
+                </form>
+                <form id="form-insert-medication" method="post" hidden>
+                    <div class="form-group">
+                        <label for="NAME">Medication Name</label>
+                        <input required type="text" class="form-control" id="NAME">
+                    </div>
+                    <div class="form-group">
+                        <label for="DESCRIPTION">Medication Description</label>
+                        <input required type="text" class="form-control" id="DESCRIPTION">
+                    </div>
+                    <button type="submit" class="btn btn-block btn-success">Submit</button>
                 </form>
                 <table id="dt-info" class="display table-striped" cellspacing="0" width="100%">
                 </table>
+                <div id="dt-controls" hidden>
+                    <button id="dt-update-address" class="btn btn-block btn-default">Update Address</button>
+                    <button id="dt-update-info" class="btn btn-block btn-default">Update Patient Info</button>
+                    <button id="dt-insert-health" class="btn btn-block btn-default">Insert Health Info</button>
+                    <button id="dt-insert-history" class="btn btn-block btn-default">Insert Patient History</button>
+                    <button id="dt-insert-medication" class="btn btn-block btn-default">Insert Medication Info</button>
+                </div>
             </div>
         </div>
 
-        <div id="nameInput" class="input-group-lg center-block helloInput">
+        <!-- <div id="nameInput" class="input-group-lg center-block helloInput">
             <input id="user_name" type="text" class="form-control" placeholder="What's your name?" aria-describedby="sizing-addon1" value=""
-            />
-        </div>
+                hidden />
+        </div> -->
         <p id="response" class="lead text-center"></p>
         <p id="databaseNames" class="lead text-center"></p>
     </div>

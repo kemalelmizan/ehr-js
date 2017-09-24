@@ -1,4 +1,5 @@
 var LOGGED_IN_USER_ID = 0;
+var LOGGED_IN_PATIENT_ID = 0;
 
 $.fn.dataTable.ext.errMode = "none";
 
@@ -14,6 +15,14 @@ function getBasicInfo(id) {
         );
         $("#dt-alert-info").slideDown();
       } else {
+        console.log(data);
+        LOGGED_IN_PATIENT_ID = data.ROW_ID;
+        if ($.fn.DataTable.isDataTable("#dt-info")) {
+          $("#dt-info")
+            .DataTable()
+            .destroy();
+          $("#dt-info").empty();
+        }
         $("#dt-info").DataTable({
           aaSorting: [],
           paging: false,
@@ -45,7 +54,7 @@ function getBasicInfo(id) {
                   }
                   return value;
                 })
-                  .slice(3, -3)
+                  .slice(2, -2)
                   .split('","')
                   .map(c => ({
                     key: c.split('":"')[0],
@@ -55,6 +64,7 @@ function getBasicInfo(id) {
               .draw();
           }
         });
+        $("#dt-info").slideDown();
       }
     });
   }
@@ -63,7 +73,7 @@ function getBasicInfo(id) {
 $(document).ready(function() {
   $("#nameInput").hide();
   $.get("./oauth2details", function(data, textStatus, jqXHR) {
-    if (data !== "0") {
+    if (data !== "0" && !data.code) {
       // Logged In
       console.log(data);
       $("#h1-welcome").hide();
@@ -75,6 +85,7 @@ $(document).ready(function() {
       );
       $("#google-id-profile").append("<br/>");
       $("#google-id-profile").append("<img src='" + data.image.url + "'/>");
+      $("#dt-controls").show();
 
       // Get QR Image
       $.get("./qr/" + data.id, function(data, textStatus, jqXHR) {
@@ -88,6 +99,7 @@ $(document).ready(function() {
       $.get("./oauth2url", function(data, textStatus, jqXHR) {
         $("#google-oauth2").attr("href", data);
         $("#google-oauth2").show();
+        $("#dt-controls").hide();
       });
     }
   });
@@ -106,9 +118,64 @@ $("body").on("click", "#a-create-record", function(event) {
     .focus();
 });
 
+$("body").on("click", "#dt-update-address", function(event) {
+  event.preventDefault();
+  $("#dt-alert-info").slideUp();
+  $("#dt-info").slideUp();
+  $("#form-insert-addr-info").slideDown();
+  $("html, body").animate(
+    { scrollTop: $("#form-insert-addr-info").offset().top - 90 },
+    600
+  );
+  $("#form-insert-addr-info")
+    .find("input")[0]
+    .focus();
+});
+
+$("body").on("click", "#dt-insert-health", function(event) {
+  event.preventDefault();
+  $("#dt-alert-info").slideUp();
+  $("#dt-info").slideUp();
+  $("#form-insert-health-info").slideDown();
+  $("html, body").animate(
+    { scrollTop: $("#form-insert-health-info").offset().top - 90 },
+    600
+  );
+  $("#form-insert-health-info")
+    .find("input")[0]
+    .focus();
+});
+
+$("body").on("click", "#dt-insert-history", function(event) {
+  event.preventDefault();
+  $("#dt-alert-info").slideUp();
+  $("#dt-info").slideUp();
+  $("#form-insert-history").slideDown();
+  $("html, body").animate(
+    { scrollTop: $("#form-insert-history").offset().top - 90 },
+    600
+  );
+  $("#form-insert-history")
+    .find("input")[0]
+    .focus();
+});
+
+$("body").on("click", "#dt-insert-medication", function(event) {
+  event.preventDefault();
+  $("#dt-alert-info").slideUp();
+  $("#dt-info").slideUp();
+  $("#form-insert-medication").slideDown();
+  $("html, body").animate(
+    { scrollTop: $("#form-insert-medication").offset().top - 90 },
+    600
+  );
+  $("#form-insert-medication")
+    .find("input")[0]
+    .focus();
+});
+
 $("body").on("submit", "#form-insert-patient-org", function(event) {
   event.preventDefault();
-  console.log($(this).find("input"));
   var formData = {};
   if (LOGGED_IN_USER_ID !== 0) {
     formData["GOOGLE_ID"] = LOGGED_IN_USER_ID;
@@ -117,6 +184,9 @@ $("body").on("submit", "#form-insert-patient-org", function(event) {
     });
     console.log(formData);
     $.post("./insert/patient_org", formData).done(function(data) {
+      if (data.redirect) {
+        window.location.replace(data.redirect);
+      }
       $("#dt-alert-text").html(data);
       $("#dt-alert-info").slideDown();
       $("html, body").animate(
@@ -124,6 +194,110 @@ $("body").on("submit", "#form-insert-patient-org", function(event) {
         600
       );
       $("#form-insert-patient-org").slideUp();
+      getBasicInfo();
+    });
+  }
+});
+
+$("body").on("submit", "#form-insert-addr-info", function(event) {
+  event.preventDefault();
+  var formData = {};
+  if (LOGGED_IN_USER_ID !== 0 && LOGGED_IN_PATIENT_ID !== 0) {
+    formData["GOOGLE_ID"] = LOGGED_IN_USER_ID;
+    formData["PATIENT_ORG_ID"] = LOGGED_IN_PATIENT_ID;
+    $.each($(this).find("input"), function(key, input) {
+      formData[$(input).attr("id")] = $(input).val();
+    });
+    console.log(formData);
+    $.post("./insert/addr_info", formData).done(function(data) {
+      if (data.redirect) {
+        window.location.replace(data.redirect);
+      }
+      $("#dt-alert-text").html(data);
+      $("#dt-alert-info").slideDown();
+      $("html, body").animate(
+        { scrollTop: $("#dt-alert-info").offset().top - 90 },
+        600
+      );
+      $("#form-insert-addr-info").slideUp();
+      getBasicInfo();
+    });
+  }
+});
+
+$("body").on("submit", "#form-insert-health-info", function(event) {
+  event.preventDefault();
+  var formData = {};
+  if (LOGGED_IN_USER_ID !== 0 && LOGGED_IN_PATIENT_ID !== 0) {
+    formData["GOOGLE_ID"] = LOGGED_IN_USER_ID;
+    formData["PATIENT_ORG_ID"] = LOGGED_IN_PATIENT_ID;
+    $.each($(this).find("input"), function(key, input) {
+      formData[$(input).attr("id")] = $(input).val();
+    });
+    console.log(formData);
+    $.post("./insert/gen_health_info", formData).done(function(data) {
+      if (data.redirect) {
+        window.location.replace(data.redirect);
+      }
+      $("#dt-alert-text").html(data);
+      $("#dt-alert-info").slideDown();
+      $("html, body").animate(
+        { scrollTop: $("#dt-alert-info").offset().top - 90 },
+        600
+      );
+      $("#form-insert-health-info").slideUp();
+      getBasicInfo();
+    });
+  }
+});
+
+$("body").on("submit", "#form-insert-history", function(event) {
+  event.preventDefault();
+  var formData = {};
+  if (LOGGED_IN_USER_ID !== 0 && LOGGED_IN_PATIENT_ID !== 0) {
+    formData["GOOGLE_ID"] = LOGGED_IN_USER_ID;
+    formData["PATIENT_ORG_ID"] = LOGGED_IN_PATIENT_ID;
+    $.each($(this).find("input"), function(key, input) {
+      formData[$(input).attr("id")] = $(input).val();
+    });
+    console.log(formData);
+    $.post("./insert/hist_patient", formData).done(function(data) {
+      if (data.redirect) {
+        window.location.replace(data.redirect);
+      }
+      $("#dt-alert-text").html(data);
+      $("#dt-alert-info").slideDown();
+      $("html, body").animate(
+        { scrollTop: $("#dt-alert-info").offset().top - 90 },
+        600
+      );
+      $("#form-insert-history").slideUp();
+      getBasicInfo();
+    });
+  }
+});
+
+$("body").on("submit", "#form-insert-medication", function(event) {
+  event.preventDefault();
+  var formData = {};
+  if (LOGGED_IN_USER_ID !== 0 && LOGGED_IN_PATIENT_ID !== 0) {
+    formData["GOOGLE_ID"] = LOGGED_IN_USER_ID;
+    formData["PATIENT_ORG_ID"] = LOGGED_IN_PATIENT_ID;
+    $.each($(this).find("input"), function(key, input) {
+      formData[$(input).attr("id")] = $(input).val();
+    });
+    console.log(formData);
+    $.post("./insert/medication_info", formData).done(function(data) {
+      if (data.redirect) {
+        window.location.replace(data.redirect);
+      }
+      $("#dt-alert-text").html(data);
+      $("#dt-alert-info").slideDown();
+      $("html, body").animate(
+        { scrollTop: $("#dt-alert-info").offset().top - 90 },
+        600
+      );
+      $("#form-insert-medication").slideUp();
       getBasicInfo();
     });
   }

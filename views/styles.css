@@ -12,6 +12,16 @@ button,
   text-align: center;
 }
 
+#h1-welcome a {
+  display: inline;
+}
+
+#h1-welcome img {
+  height: 30px;
+  margin-top: -5px;
+  display: inline;
+}
+
 #qr-reader {
   width: 300px;
   height: 300px;
@@ -42,4 +52,8 @@ button,
 
 input[type="search"] {
   -webkit-appearance: searchfield;
+}
+
+#dt-controls {
+  margin-top: 10px;
 }

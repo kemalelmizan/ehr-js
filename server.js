@@ -141,11 +141,16 @@ app.get("/data/info/:userId", function(req, res) {
       } else {
         var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
         var sql = `
-          SELECT * FROM  PATIENT_ORG po
-          LEFT OUTER JOIN HIST_PATIENT hp ON hp.PATIENT_ORG_ID = po.ROW_ID
+          SELECT po.*, 
+            ai.ADDR_NAME, ai.HOUSE_NUM, ai.PROVINCE, ai.SUBDISTRICT, ai.VILLAGE, ai.POSTAL_CODE,
+            hp.ALLERGIES_ADVERSE_REACT, hp.OPERATION, hp.PROBLEMS, hp.CREATED_DATE, hp.DATE_OPERATION,
+            ghi.BLOODPRESSURE, ghi.CHOLESTEROL, ghi.HEIGHT, ghi.WEIGHT, ghi.TEMPERATURE, ghi.CREATED_DATE,
+            mi.NAME, mi.DESCRIPTION, mi.CREATED_DATE
+          FROM  PATIENT_ORG po
           LEFT OUTER JOIN ADDR_INFO ai ON ai.PATIENT_ORG_ID = po.ROW_ID
+          LEFT OUTER JOIN HIST_PATIENT hp ON hp.PATIENT_ORG_ID = po.ROW_ID
           LEFT OUTER JOIN GEN_HEALTH_INFO ghi ON ghi.PATIENT_ORG_ID = po.ROW_ID
-          LEFT OUTER JOIN MEDICATION_INFO mi ON hp.PATIENT_ORG_ID = po.ROW_ID
+          LEFT OUTER JOIN MEDICATION_INFO mi ON mi.PATIENT_ORG_ID = po.ROW_ID
           WHERE po.GOOGLE_ID = ?
         `;
         var resp = {};
@@ -155,7 +160,7 @@ app.get("/data/info/:userId", function(req, res) {
           if (err) throw err;
           // res.send(row);
           rows.forEach(row => {
-            resp = Object.assign(rows, resp);
+            resp = Object.assign(row, resp);
           });
 
           if (Object.keys(resp).length === 0) {
@@ -222,28 +227,205 @@ app.use("/oauth2details", function(req, res) {
 
 // INSERT Endpoints
 app.post("/insert/patient_org", function(req, res) {
-  var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-  var displayName = req.body.FIRST_NAME + " " + req.body.LAST_NAME;
-  console.log("POST /insert/patient_org from: " + ip);
-  console.log(req.body);
+  if (req.session["tokens"] === undefined) {
+    // res.redirect(config.ROOT_URL);
+    res.send({ redirect: config.ROOT_URL });
+  } else {
+    oauth2Client.setCredentials(req.session["tokens"]);
+    var p = new Promise((resolve, reject) => {
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, res) => {
+        resolve(res || err);
+      });
+    }).then(data => {
+      // TODO: allow medic userId approved to access this
+      if (data.id !== req.body.GOOGLE_ID) {
+        res.send({ redirect: config.ROOT_URL });
+      } else {
+        var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+        var displayName = req.body.FIRST_NAME + " " + req.body.LAST_NAME;
+        console.log("POST /insert/patient_org from: " + ip);
+        console.log(req.body);
 
-  var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
-  // insert one row into the langs table
-  var sql = `
-    INSERT INTO PATIENT_ORG
-    (${Object.keys(req.body).join(",")}) 
-    VALUES (${Object.keys(req.body)
-      .map(k => "?")
-      .join(",")})
-  `;
-  console.log(sql);
-  db.run(sql, Object.keys(req.body).map(k => req.body[k]), function(err) {
-    if (err) return console.log(err.message);
-    console.log(`Row inserted with rowid ${this.lastID}`);
-  });
-  db.close(config.DB_CLOSE_ERR);
+        var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
+        var sql = `
+          INSERT INTO PATIENT_ORG
+          (${Object.keys(req.body).join(",")}) 
+          VALUES (${Object.keys(req.body)
+            .map(k => "?")
+            .join(",")})
+        `;
+        db.run(sql, Object.keys(req.body).map(k => req.body[k]), function(err) {
+          if (err) return console.log(err.message);
+          console.log(
+            `Row inserted with rowid ${this.lastID} : for ${displayName}`
+          );
+        });
+        db.close(config.DB_CLOSE_ERR);
 
-  res.send("Hello " + displayName + "! I've added you to the database.");
+        res.send("Hello " + displayName + "! I've added you to the database.");
+      }
+    });
+  }
+});
+
+app.post("/insert/addr_info", function(req, res) {
+  if (req.session["tokens"] === undefined) {
+    // res.redirect(config.ROOT_URL);
+    res.send({ redirect: config.ROOT_URL });
+  } else {
+    oauth2Client.setCredentials(req.session["tokens"]);
+    var p = new Promise((resolve, reject) => {
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, res) => {
+        resolve(res || err);
+      });
+    }).then(data => {
+      // TODO: allow medic userId approved to access this
+      if (data.id !== req.body.GOOGLE_ID) {
+        res.send({ redirect: config.ROOT_URL });
+      } else {
+        var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+        console.log("POST /insert/addr_info from: " + ip);
+        console.log(req.body);
+        delete req.body["GOOGLE_ID"];
+
+        var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
+        var sql = `
+          INSERT INTO ADDR_INFO
+          (${Object.keys(req.body).join(",")}) 
+          VALUES (${Object.keys(req.body)
+            .map(k => "?")
+            .join(",")})
+        `;
+        db.run(sql, Object.keys(req.body).map(k => req.body[k]), function(err) {
+          if (err) return console.log(err.message);
+          console.log(`Row inserted with rowid ${this.lastID}`);
+        });
+        db.close(config.DB_CLOSE_ERR);
+
+        res.send("Address Info Inserted.");
+      }
+    });
+  }
+});
+
+app.post("/insert/gen_health_info", function(req, res) {
+  if (req.session["tokens"] === undefined) {
+    // res.redirect(config.ROOT_URL);
+    res.send({ redirect: config.ROOT_URL });
+  } else {
+    oauth2Client.setCredentials(req.session["tokens"]);
+    var p = new Promise((resolve, reject) => {
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, res) => {
+        resolve(res || err);
+      });
+    }).then(data => {
+      // TODO: allow medic userId approved to access this
+      if (data.id !== req.body.GOOGLE_ID) {
+        res.send({ redirect: config.ROOT_URL });
+      } else {
+        var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+        console.log("POST /insert/gen_health_info from: " + ip);
+        console.log(req.body);
+        delete req.body["GOOGLE_ID"];
+
+        var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
+        var sql = `
+          INSERT INTO GEN_HEALTH_INFO
+          (${Object.keys(req.body).join(",")}) 
+          VALUES (${Object.keys(req.body)
+            .map(k => "?")
+            .join(",")})
+        `;
+        db.run(sql, Object.keys(req.body).map(k => req.body[k]), function(err) {
+          if (err) return console.log(err.message);
+          console.log(`Row inserted with rowid ${this.lastID}`);
+        });
+        db.close(config.DB_CLOSE_ERR);
+
+        res.send("General Health Info Inserted.");
+      }
+    });
+  }
+});
+
+app.post("/insert/hist_patient", function(req, res) {
+  if (req.session["tokens"] === undefined) {
+    // res.redirect(config.ROOT_URL);
+    res.send({ redirect: config.ROOT_URL });
+  } else {
+    oauth2Client.setCredentials(req.session["tokens"]);
+    var p = new Promise((resolve, reject) => {
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, res) => {
+        resolve(res || err);
+      });
+    }).then(data => {
+      // TODO: allow medic userId approved to access this
+      if (data.id !== req.body.GOOGLE_ID) {
+        res.send({ redirect: config.ROOT_URL });
+      } else {
+        var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+        console.log("POST /insert/hist_patient from: " + ip);
+        console.log(req.body);
+        delete req.body["GOOGLE_ID"];
+
+        var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
+        var sql = `
+          INSERT INTO HIST_PATIENT
+          (${Object.keys(req.body).join(",")}) 
+          VALUES (${Object.keys(req.body)
+            .map(k => "?")
+            .join(",")})
+        `;
+        db.run(sql, Object.keys(req.body).map(k => req.body[k]), function(err) {
+          if (err) return console.log(err.message);
+          console.log(`Row inserted with rowid ${this.lastID}`);
+        });
+        db.close(config.DB_CLOSE_ERR);
+
+        res.send("Patient History Inserted.");
+      }
+    });
+  }
+});
+
+app.post("/insert/medication_info", function(req, res) {
+  if (req.session["tokens"] === undefined) {
+    // res.redirect(config.ROOT_URL);
+    res.send({ redirect: config.ROOT_URL });
+  } else {
+    oauth2Client.setCredentials(req.session["tokens"]);
+    var p = new Promise((resolve, reject) => {
+      plus.people.get({ userId: "me", auth: oauth2Client }, (err, res) => {
+        resolve(res || err);
+      });
+    }).then(data => {
+      // TODO: allow medic userId approved to access this
+      if (data.id !== req.body.GOOGLE_ID) {
+        res.send({ redirect: config.ROOT_URL });
+      } else {
+        var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+        console.log("POST /insert/hist_patient from: " + ip);
+        console.log(req.body);
+        delete req.body["GOOGLE_ID"];
+
+        var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
+        var sql = `
+          INSERT INTO MEDICATION_INFO
+          (${Object.keys(req.body).join(",")}) 
+          VALUES (${Object.keys(req.body)
+            .map(k => "?")
+            .join(",")})
+        `;
+        db.run(sql, Object.keys(req.body).map(k => req.body[k]), function(err) {
+          if (err) return console.log(err.message);
+          console.log(`Row inserted with rowid ${this.lastID}`);
+        });
+        db.close(config.DB_CLOSE_ERR);
+
+        res.send("Medication Info Inserted.");
+      }
+    });
+  }
 });
 
 // Bluemix's NoSQL Database
