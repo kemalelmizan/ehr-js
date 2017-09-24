@@ -1,5 +1,5 @@
 # [EHR-js](https://ehr-js.au-syd.mybluemix.net) [![Build Status](https://travis-ci.org/kemalelmizan/ehr-js.svg?branch=master)](https://travis-ci.org/kemalelmizan/ehr-js)
-## Cloud Based Concept with Node.js and Bluemix
+### Cloud Based Concept with Node.js and Bluemix
 
 Libraries used in back end:
 - [express](https://github.com/expressjs/express) for routing, app logic, etc
