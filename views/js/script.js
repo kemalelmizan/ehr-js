@@ -1,9 +1,73 @@
+var LOGGED_IN_USER_ID = 0;
+
+$.fn.dataTable.ext.errMode = "none";
+
+function getBasicInfo(id) {
+  id = id || LOGGED_IN_USER_ID;
+  if (id !== 0) {
+    $.get("./data/info/" + id, function(data, textStatus, jqXHR) {
+      if (data.redirect) {
+        window.location.replace(data.redirect);
+      } else if (data === "0") {
+        $("#dt-alert-text").html(
+          "<a id='a-create-record' href='#'> No EHR detected for you in our system. Create one here!</a>"
+        );
+        $("#dt-alert-info").slideDown();
+      } else {
+        $("#dt-info").DataTable({
+          aaSorting: [],
+          paging: false,
+          bLengthChange: false,
+          bFilter: true,
+          bSort: false,
+          bInfo: false,
+          bAutoWidth: false,
+          responsive: true,
+          columns: [
+            {
+              data: "key",
+              title: "Key"
+            },
+            {
+              data: "value",
+              title: "Value"
+            }
+          ],
+          initComplete: function() {
+            this.api()
+              .rows.add(
+                JSON.stringify(data, function(key, value) {
+                  if (typeof value === "number") {
+                    return value.toString();
+                  }
+                  if (value === null) {
+                    return "";
+                  }
+                  return value;
+                })
+                  .slice(3, -3)
+                  .split('","')
+                  .map(c => ({
+                    key: c.split('":"')[0],
+                    value: c.split('":"')[1]
+                  }))
+              )
+              .draw();
+          }
+        });
+      }
+    });
+  }
+}
+
 $(document).ready(function() {
   $("#nameInput").hide();
   $.get("./oauth2details", function(data, textStatus, jqXHR) {
     if (data !== "0") {
       // Logged In
+      console.log(data);
       $("#h1-welcome").hide();
+      LOGGED_IN_USER_ID = data.id;
       $("#google-id-profile").append(
         "<div>Welcome, " +
           data.displayName +
@@ -18,47 +82,7 @@ $(document).ready(function() {
       });
 
       // Get Basic Info
-      $.get("./data/info/" + data.id, function(data, textStatus, jqXHR) {
-        if (data.redirect) {
-          window.location.replace(data.redirect);
-        } else {
-          $("#dt-info").DataTable({
-            aaSorting: [],
-            paging: false,
-            columns: [
-              {
-                data: "key",
-                title: "Key"
-              },
-              {
-                data: "value",
-                title: "Value"
-              }
-            ],
-            initComplete: function() {
-              this.api()
-                .rows.add(
-                  JSON.stringify(data, function(key, value) {
-                    if (typeof value === "number") {
-                      return value.toString();
-                    }
-                    if (value === null) {
-                      return "";
-                    }
-                    return value;
-                  })
-                    .slice(2, -2)
-                    .split('","')
-                    .map(c => ({
-                      key: c.split('":"')[0],
-                      value: c.split('":"')[1]
-                    }))
-                )
-                .draw();
-            }
-          });
-        }
-      });
+      getBasicInfo(data.id);
     } else {
       // Not Logged In
       $.get("./oauth2url", function(data, textStatus, jqXHR) {
@@ -67,6 +91,42 @@ $(document).ready(function() {
       });
     }
   });
+});
+
+$("body").on("click", "#a-create-record", function(event) {
+  event.preventDefault();
+  $("#dt-alert-info").slideUp();
+  $("#form-insert-patient-org").slideDown();
+  $("html, body").animate(
+    { scrollTop: $("#form-insert-patient-org").offset().top - 90 },
+    600
+  );
+  $("#form-insert-patient-org")
+    .find("input")[0]
+    .focus();
+});
+
+$("body").on("submit", "#form-insert-patient-org", function(event) {
+  event.preventDefault();
+  console.log($(this).find("input"));
+  var formData = {};
+  if (LOGGED_IN_USER_ID !== 0) {
+    formData["GOOGLE_ID"] = LOGGED_IN_USER_ID;
+    $.each($(this).find("input"), function(key, input) {
+      formData[$(input).attr("id")] = $(input).val();
+    });
+    console.log(formData);
+    $.post("./insert/patient_org", formData).done(function(data) {
+      $("#dt-alert-text").html(data);
+      $("#dt-alert-info").slideDown();
+      $("html, body").animate(
+        { scrollTop: $("#dt-alert-info").offset().top - 90 },
+        600
+      );
+      $("#form-insert-patient-org").slideUp();
+      getBasicInfo();
+    });
+  }
 });
 
 var scanning = false;

@@ -38,6 +38,53 @@
 
         <div class="row">
             <div class="col-xs-12">
+                <div id="dt-alert-info" class="alert alert-info alert-dismissable" role="alert" hidden>
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <span id="dt-alert-text"></span>
+                </div>
+                <form id="form-insert-patient-org" method="post" hidden>
+                    <div class="form-group">
+                        <label for="FIRST_NAME">First Name</label>
+                        <input required type="text" class="form-control" id="FIRST_NAME">
+                    </div>
+                    <div class="form-group">
+                        <label for="LAST_NAME">Last Name</label>
+                        <input required type="text" class="form-control" id="LAST_NAME">
+                    </div>
+                    <div class="form-group">
+                        <label for="NO_ID">ID Number (Example: KTP)</label>
+                        <input type="text" class="form-control" id="NO_ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="DOB">Date of Birth (MM-DD-YYYY)</label>
+                        <input type="text" class="form-control" id="DOB">
+                    </div>
+                    <div class="form-group">
+                        <label for="GENDER">Gender (M/F)</label>
+                        <input type="text" class="form-control" id="GENDER">
+                    </div>
+                    <div class="form-group">
+                        <label for="TELEPHONE">Telephone</label>
+                        <input type="text" class="form-control" id="TELEPHONE">
+                    </div>
+                    <div class="form-group">
+                        <label for="HANDPHONE">Handphone</label>
+                        <input type="text" class="form-control" id="HANDPHONE">
+                    </div>
+                    <div class="form-group">
+                        <label for="EMAIL">Email address:</label>
+                        <input type="email" class="form-control" id="EMAIL">
+                    </div>
+                    <div class="form-group">
+                        <label for="MARITAL_STATUS">Marital Status (Single/Married)</label>
+                        <input type="text" class="form-control" id="MARITAL_STATUS">
+                    </div>
+                    <div class="form-group">
+                        <label for="JOB">Job</label>
+                        <input type="text" class="form-control" id="JOB">
+                    </div>
+                    <button type="submit" class="btn btn-block btn-success">Next</button>
+                </form>
                 <table id="dt-info" class="display table-striped" cellspacing="0" width="100%">
                 </table>
             </div>

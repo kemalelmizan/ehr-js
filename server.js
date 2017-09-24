@@ -116,7 +116,7 @@ app.get("/qr/root", function(req, res) {
 
 app.get("/qr/:userId", function(req, res) {
   QRCode.toDataURL(
-    config.ROOT_URL + "/" + req.params.userId,
+    config.ROOT_URL + "/userdata/" + req.params.userId,
     (err, dataURL) => {
       if (err) throw err;
       res.send(dataURL);
@@ -140,12 +140,34 @@ app.get("/data/info/:userId", function(req, res) {
         res.redirect(config.ROOT_URL);
       } else {
         var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
-        var sql = `SELECT * FROM PATIENT_ORG WHERE GOOGLE_ID = ?`;
-        db.each(sql, [req.params.userId], (err, row) => {
+        var sql = `
+          SELECT * FROM  PATIENT_ORG po
+          LEFT OUTER JOIN HIST_PATIENT hp ON hp.PATIENT_ORG_ID = po.ROW_ID
+          LEFT OUTER JOIN ADDR_INFO ai ON ai.PATIENT_ORG_ID = po.ROW_ID
+          LEFT OUTER JOIN GEN_HEALTH_INFO ghi ON ghi.PATIENT_ORG_ID = po.ROW_ID
+          LEFT OUTER JOIN MEDICATION_INFO mi ON hp.PATIENT_ORG_ID = po.ROW_ID
+          WHERE po.GOOGLE_ID = ?
+        `;
+        var resp = {};
+        var patientId = 0;
+
+        db.all(sql, [req.params.userId], (err, rows) => {
           if (err) throw err;
-          res.send(row);
+          // res.send(row);
+          rows.forEach(row => {
+            resp = Object.assign(rows, resp);
+          });
+
+          if (Object.keys(resp).length === 0) {
+            res.send("0");
+          } else {
+            res.send(resp);
+          }
+          // Object.assign(row, resp);
+          // patientId = row.ROW_ID;
           // res.send(util.inspect(row));
         });
+
         db.close(config.DB_CLOSE_ERR);
       }
     });
@@ -196,6 +218,32 @@ app.use("/oauth2details", function(req, res) {
       res.send(data);
     });
   }
+});
+
+// INSERT Endpoints
+app.post("/insert/patient_org", function(req, res) {
+  var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+  var displayName = req.body.FIRST_NAME + " " + req.body.LAST_NAME;
+  console.log("POST /insert/patient_org from: " + ip);
+  console.log(req.body);
+
+  var db = new sqlite3.Database(config.DB_CONN[0], config.DB_CONN[1]);
+  // insert one row into the langs table
+  var sql = `
+    INSERT INTO PATIENT_ORG
+    (${Object.keys(req.body).join(",")}) 
+    VALUES (${Object.keys(req.body)
+      .map(k => "?")
+      .join(",")})
+  `;
+  console.log(sql);
+  db.run(sql, Object.keys(req.body).map(k => req.body[k]), function(err) {
+    if (err) return console.log(err.message);
+    console.log(`Row inserted with rowid ${this.lastID}`);
+  });
+  db.close(config.DB_CLOSE_ERR);
+
+  res.send("Hello " + displayName + "! I've added you to the database.");
 });
 
 // Bluemix's NoSQL Database
@@ -286,4 +334,5 @@ app.use(express.static(__dirname + "/views"));
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
   console.log("EHR-js is ready to be served at http://localhost:" + port);
+  console.log("Please change config.ROOT_URL before deploying with cf push");
 });

@@ -9,6 +9,7 @@ button,
   margin-right: auto;
   margin-left: auto;
   display: block;
+  text-align: center;
 }
 
 #qr-reader {
@@ -28,4 +29,17 @@ button,
 
 .container h1 {
   text-align: center;
+}
+
+#dt-info_wrapper.dataTables_wrapper table thead {
+  display: none;
+}
+
+#dt-info_wrapper.dataTables_wrapper .dataTables_filter {
+  float: none;
+  text-align: center;
+}
+
+input[type="search"] {
+  -webkit-appearance: searchfield;
 }
