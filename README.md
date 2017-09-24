@@ -1,19 +1,19 @@
 # EHR - Cloud Based Concept with Node.js and Bluemix
+[![Build Status](https://travis-ci.org/kemalelmizan/ehr-js.svg?branch=master)](https://travis-ci.org/kemalelmizan/ehr-js)
 
-Libraries used:
 
-Back end:
+Libraries used in back end:
 - [express](https://github.com/expressjs/express) for routing, app logic, etc
 - [node-sqlite](https://github.com/mapbox/node-sqlite3) for accessing sqlite with node
 - [Google OAuth2 API](https://github.com/google/google-api-nodejs-client) for authenticating users
 - [URSA](https://github.com/JoshKaufman/ursa) for RSA public/private key OpenSSL bindings
 - [node-qrcode](https://github.com/soldair/node-qrcode) for generating QR-Codes
 
-Front end:
+Libraries used in front end:
 - [html5-qrcode](https://github.com/dwa012/html5-qrcode) for scanning QR-Codes
 - [DataTables](https://github.com/DataTables/DataTables) for displaying data
 
-Technologies Stack used for Development:
+Technologies stack used for development:
 - [Node.js](https://nodejs.org) with [Express](https://github.com/expressjs/express) for backend app logic 
 - [SQLite](https://www.sqlite.org) for relational database
 - [IBM Bluemix](https://www.ibm.com/cloud-computing/bluemix/) for Hosting
@@ -21,7 +21,6 @@ Technologies Stack used for Development:
 - [Snyk](https://snyk.io) for vulnerability assessment
 
 Below is Bluemix's Readme for Node.js
-
 # Node.js getting started application
 The Bluemix Getting started tutorial for Node.js uses this sample application to provide you with a sample workflow for working with any Node.js app on Bluemix; you set up a development environment, deploy an app locally and on Bluemix, and integrate a Bluemix database service in your app.
 
