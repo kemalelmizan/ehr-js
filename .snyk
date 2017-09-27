@@ -1,6 +1,11 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.7.1
-ignore: {}
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:tunnel-agent:20170305':
+    - cloudant > request > tunnel-agent:
+        reason: no updates from cloudant
+        expires: '2017-10-27T11:38:54.758Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20170412':
@@ -8,4 +13,4 @@ patch:
         patched: '2017-09-24T02:55:17.302Z'
   'npm:debug:20170905':
     - cloudant > debug:
-        patched: '2017-09-27T06:30:06.060Z'
+        patched: '2017-09-27T11:37:55.705Z'
