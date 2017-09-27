@@ -6,3 +6,6 @@ patch:
   'npm:ms:20170412':
     - cloudant > debug > ms:
         patched: '2017-09-24T02:55:17.302Z'
+  'npm:debug:20170905':
+    - cloudant > debug:
+        patched: '2017-09-27T06:30:06.060Z'
