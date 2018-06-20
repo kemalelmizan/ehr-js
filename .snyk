@@ -1,11 +1,15 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.7.1
+version: v1.12.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:tunnel-agent:20170305':
     - cloudant > request > tunnel-agent:
         reason: no updates from cloudant
         expires: '2017-10-27T11:38:54.758Z'
+  'npm:stringstream:20180511':
+    - sqlite3 > node-pre-gyp > request > stringstream:
+        reason: No updates
+        expires: '2018-07-20T20:45:28.428Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20170412':
@@ -14,3 +18,20 @@ patch:
   'npm:debug:20170905':
     - cloudant > debug:
         patched: '2017-09-27T11:37:55.705Z'
+  'npm:hoek:20180212':
+    - sqlite3 > node-pre-gyp > hawk > boom > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
+    - sqlite3 > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
+    - sqlite3 > node-pre-gyp > hawk > cryptiles > boom > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
+    - sqlite3 > node-pre-gyp > hawk > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
+    - sqlite3 > node-pre-gyp > request > hawk > boom > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
+    - sqlite3 > node-pre-gyp > request > hawk > sntp > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
+    - sqlite3 > node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
+    - sqlite3 > node-pre-gyp > request > hawk > hoek:
+        patched: '2018-06-20T20:44:34.958Z'
