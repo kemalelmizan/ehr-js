@@ -19,13 +19,13 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "cfenv": "^1.0.x",
-    "cloudant": "^1.8.0",
+    "cloudant": "^1.10.0",
     "dotenv": "^4.0.0",
     "express": "^4.15.5",
     "express-session": "^1.15.6",
-    "googleapis": "^22.1.0",
+    "googleapis": "^22.2.0",
     "qrcode": "^0.9.0",
-    "snyk": "^1.41.1",
+    "snyk": "^1.83.0",
     "sqlite3": "^4.0.0",
     "ursa": "^0.9.4"
   },
