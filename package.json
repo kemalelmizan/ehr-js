@@ -18,7 +18,7 @@
     "url": "https://github.com/kemalelmizan/ehr-js"
   },
   "dependencies": {
-    "body-parser": "^1.18.2",
+    "body-parser": "^1.19.0",
     "cfenv": "^1.2.1",
     "cloudant": "^1.10.0",
     "dotenv": "^4.0.0",
