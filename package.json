@@ -27,7 +27,7 @@
     "googleapis": "^22.2.0",
     "qrcode": "^0.9.0",
     "snyk": "^1.319.2",
-    "sqlite3": "^4.1.1",
+    "sqlite3": "^4.2.0",
     "ursa": "^0.9.4"
   },
   "author": "Kemal Elmizan",
