@@ -26,7 +26,7 @@
     "express-session": "^1.17.1",
     "googleapis": "^49.0.0",
     "qrcode": "^0.9.0",
-    "snyk": "^1.393.0",
+    "snyk": "^1.398.1",
     "sqlite3": "^4.2.0",
     "ursa": "^0.9.4"
   },
